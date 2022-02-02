@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block body %}
+    <div class="container">
+
+        <h1>Validation de fichier d'import en masse</h1>
+
+        <div class="card border-primary my-3">
+            <div class="card-body">
+                <p class="text-primary">Ce formulaire vous permet de vérifier le format et les données des fichiers
+                    d'import en masse de Trackdéchets avant de les transmettre à l'équipe de support.
+                </p>
+                <p class="text-primary">
+                    Merci de vous référer aux indications de <a
+                        href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse">la
+                    faq Trackdéchets</a> et notamment d'utiliser le modèle de fichier fourni sans en modifier les
+                    intitulés de colonnes et onglets.
+                </p>
+                <p class="text-primary">En deça du nombre minimal d'établissements requis, merci d'effectuer les
+                    créations de comptes manuellement.</p>
+            </div>
+        </div>
+
+        {% if not has_errors %}
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include "_form_snippet.html" with form=form %}
+                <p>Ce formulaire analyse votre fichier, aucune donnée ne sera importée dans Trackdéchets ni stockée sur ce serveur</p>
+                <button type="submit" class="btn btn-primary">Analyser et valider mon fichier</button>
+
+            </form>
+        {% endif %}
+
+        {% if parse_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        Le format de votre fichier ou son contenu n'est pas reconnu.
+                    </p>
+                    <p>Le seul format que nous acceptons est le xlsx. Veuillez utiliser le gabarit téléchargé sur <a
+                            href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse ">la faq</a> </p>
+                    <p><a href="/">Valider un autre fichier</a></p>
+                </div>
+            </div>
+
+        {% endif %}
+
+        {% if siret_errors %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+
+                    <p>
+                        Les sirets suivants ne sont pas diffusibles.
+                    </p>
+                    <p>{% for error in siret_errors %} {{ error.siret }}  {% endfor %}</p>
+                    <p>
+                        Ces sirets n'ont pas été trouvés dans la base sirene. Il s'agit d' établissemnents
+                        non diffusibles, veuillez nous transmettre un certificat d'inscription au répertoire
+                        Sirene ou une attestation de situation au répertoire Sirene pour chacun d'entre eux.
+
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if errors %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        Votre fichier comporte une ou plusieurs erreurs
+                    </p>
+                    <p>Notre système informatique ne sera pas en mesure de l'importer</p>
+                    <p>Veuillez corriger les erreurs, et vérifier à nouveau la validité de votre fichier avant de le
+                        faire parvenir à l'équipe de support</p>
+                    <p><a href="/">Valider un autre fichier</a></p>
+
+                </div>
+            </div>
+            <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-danger">
+                <th scope="col">Onglet</th>
+                <th scope="col">Numéro de ligne</th>
+                <th scope="col">Colonne</th>
+                <th scope="col">Valeur</th>
+                <th scope="col">Erreur</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for error in errors %}
+
+                <tr class="text-danger">
+
+                    <td> {{ error.tab }}</td>
+                    <td> {{ error.row_number }}</td>
+                    <td> {{ error.field_name }}</td>
+                    <td> {{ error.field_value }}</td>
+                    <td> {{ error.verbose }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        {% endif %}
+        </table>
+    </div>
+{% endblock %}

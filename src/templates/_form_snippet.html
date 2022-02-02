@@ -1,0 +1,35 @@
+{% if form.non_field_errors %}
+    <p class="text-danger fw-bold">
+        {{ form.non_field_errors.0 }}
+    </p>
+{% endif %}
+
+{% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+{% endfor %}
+
+{% for field in form.visible_fields %}
+    <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }} :</label>
+
+
+        {{ field }}
+
+        {% if field.help_text %}
+
+            <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+
+
+
+
+            {% for x in field.errors %}
+                <p class="text-danger fw-bold">{{ x }}</p>
+            {% endfor %}
+
+    </div>
+{% endfor %}
+
+
+
+
