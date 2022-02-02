@@ -14,6 +14,7 @@ django-environ = "*"
 black = "*"
 flake8 = "*"
 isort = "*"
+django-toolbelt = "*"
 
 [requires]
 python_version = "3.9"
