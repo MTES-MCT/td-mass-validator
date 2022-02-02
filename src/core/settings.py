@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import environ
 
 env = environ.Env(DEBUG=(bool, False))
@@ -21,7 +22,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOST")
 
-ADMINS = env.list("ADMINS")
+ADMINS = [el.split(":") for el in env.list("DJANGO_ADMINS", default=[])]
 
 
 # Application definition
