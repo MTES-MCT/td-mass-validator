@@ -10,6 +10,7 @@ openpyxl = "*"
 httpx = "*"
 django-environ = "*"
 gunicorn = "*"
+whitenoise = "*"
 
 [dev-packages]
 black = "*"
