@@ -29,18 +29,17 @@ class ValidateView(FormView):
     form_class = UploadForm
     template_name = "mass_validator/upload.html"
     success_url = reverse_lazy("result")
-    errors = []
-    parse_error = False
-    siret_errors = []
-    has_errors = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.errors = []
+        self.parse_error = False
+        self.siret_errors = []
+        self.has_errors = False
 
     def check_sirets_exists(self, sirets):
         for siret in sirets:
             if not check_siret(siret):
-                # message = (f"Le siret {siret} n'a pas été trouvé dans la base sirene. Il s'agit d'un établissemnent "
-                #            f"non diffusible, veuillez nous transmettre un certificat d'inscription au répertoire "
-                #            f"Sirene ou une attestation de situation au répertoire Sirene")
-
                 self.siret_errors.append(SiretError(siret))
 
     def parse(self, file):
@@ -79,6 +78,7 @@ class ValidateView(FormView):
         self.has_errors = self.errors or self.parse_error or self.siret_errors
         if self.has_errors:
             return self.error_page()
+
         return res
 
     def error_page(self):

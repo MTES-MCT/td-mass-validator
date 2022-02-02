@@ -78,10 +78,10 @@ class RowError:
         return f"{self.field_name.capitalize()} error on row n°{self.row_number} value={self.field_value}"
 
     def verbose_error_field(self):
-        return f"Valeur incorrecte"
+        return "Valeur incorrecte"
 
     def verbose_error_missing_siret(self):
-        return f"Siret absent de l'onglet établissements"
+        return "Siret absent de l'onglet établissements"
 
     @property
     def verbose(self):
