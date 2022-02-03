@@ -34,7 +34,6 @@ def validate_header(first_row, expected_header):
     """Validate first worksheet row matches `expected_header`"""
 
     header = [cell.value for cell in first_row]
-    print(header, expected_header)
     if header != expected_header:
         raise InvalidHeaderException
 
