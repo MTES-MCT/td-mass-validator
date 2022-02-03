@@ -52,15 +52,18 @@
                 <div class="card-body text-danger">
 
                     <p>
-                        Les sirets suivants ne sont pas diffusibles.
+                        Les sirets suivants ne sont pas diffusibles ou référencent des établissements fermés.
                     </p>
                     <p>{% for error in siret_errors %} {{ error.siret }}  {% endfor %}</p>
                     <p>
-                        Ces sirets n'ont pas été trouvés dans la base sirene. Il s'agit d' établissemnents
-                        non diffusibles, veuillez nous transmettre un certificat d'inscription au répertoire
-                        Sirene ou une attestation de situation au répertoire Sirene pour chacun d'entre eux.
+                        Pour chacun de ces établissements, veuillez:
+                                </p>
+                <ul>
+                    <li>vérifier qu'il ne s'agit pas d'un siret obsolète</li>
+                    <li>si le siret est bien actif, nous transmettre un certificat d'inscription au répertoire
+                        Sirene ou une attestation de situation au répertoire Sirene</li>
+                </ul>
 
-                    </p>
                 </div>
             </div>
         {% endif %}

@@ -65,6 +65,13 @@ class ValidateView(FormView):
         if not role_rows.is_valid:
             self.errors.extend(role_rows.get_errors())
 
+        # This validation can occur when both tabs are already validated
+        if etab_rows.is_valid and role_rows.is_valid:
+            etab_rows.validate_have_admin(role_rows.admin_sirets())
+            if not etab_rows.is_valid:
+                self.errors.extend(etab_rows.get_errors())
+
+        # only performs api checks if everything else passes
         if not self.errors:
             sirets = etab_rows.sirets()
             self.check_sirets_exists(sirets)

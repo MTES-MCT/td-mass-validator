@@ -25,7 +25,9 @@ ROLES_TAB = "Rôles"
 
 ERROR_FIELD = "field"
 ERROR_SIRET_MISSING_FROM_ETAB = "siret_missing_from_etab"
-ERROR_TYPES = [ERROR_FIELD, ERROR_SIRET_MISSING_FROM_ETAB]
+ERROR_SIRET_HAS_NO_ADMIN = "siret_has_no_admin"
+
+ERROR_TYPES = [ERROR_FIELD, ERROR_SIRET_MISSING_FROM_ETAB, ERROR_SIRET_HAS_NO_ADMIN]
 
 
 class BaseRow:
@@ -83,10 +85,15 @@ class RowError:
     def verbose_error_missing_siret(self):
         return "Siret absent de l'onglet établissements"
 
+    def verbose_error_siret_has_no_admin(self):
+        return "Le siret n'a pas d'ADMIN identifié dans l'onglet rôles"
+
     @property
     def verbose(self):
         if self.error_type == ERROR_SIRET_MISSING_FROM_ETAB:
             return self.verbose_error_missing_siret()
+        if self.error_type == ERROR_SIRET_HAS_NO_ADMIN:
+            return self.verbose_error_siret_has_no_admin()
         return self.verbose_error_field()
 
 
@@ -202,6 +209,19 @@ class EtabRow(BaseRow):
             )
         self.validated = True
 
+    def validate_has_admin(self, admin_sirets):
+        if self.siret not in admin_sirets:
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="siret",
+                    field_value=self.siret,
+                    tab=self.tab_name,
+                    error_type=ERROR_SIRET_HAS_NO_ADMIN,
+                )
+            )
+            self.validated = True
+
 
 @attr.s()
 class EtabRows(BaseRows):
@@ -224,6 +244,12 @@ class EtabRows(BaseRows):
         self.is_valid = True
         for row in self:
             row.validate()
+            if not row.is_valid:
+                self.is_valid = False
+
+    def validate_have_admin(self, admin_sirets):
+        for row in self:
+            row.validate_has_admin(admin_sirets)
             if not row.is_valid:
                 self.is_valid = False
 
@@ -347,8 +373,10 @@ class RoleRows(BaseRows):
     is_valid = attr.ib(default=False)
     verbose_errors = attr.ib(default=attr.Factory(list))
 
-    def sirets(self):
-        return list(set([item.siret for item in self if item.siret]))
+    def admin_sirets(self):
+        return list(
+            set([row.siret for row in self if row.siret and row.role == "ADMIN"])
+        )
 
     def as_csv(self):
         ret = []
