@@ -89,7 +89,7 @@ class RowError:
         if self.field_name == "siret":
             return "Format de siret incorrect, un siret est composé de 14 chiffres"
         if self.field_name == "companyTypes":
-            return f"Le champ companyTypes accepte uniquement ADMIN ou MEMBER "
+            return "Le champ companyTypes accepte uniquement ADMIN ou MEMBER "
         if self.field_name == "role":
             return f"Le champ role accepte uniqument {','.join(COMPANY_TYPES)}"
         if self.field_name in ["email", "contactEmail"]:

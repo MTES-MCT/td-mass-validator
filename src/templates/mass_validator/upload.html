@@ -34,12 +34,19 @@
             </form>
         {% endif %}
 
+        {% if has_errors %}
+            <p><a href="/">Valider un autre fichier</a></p>
+        {% endif %}
+
         {% if enough_rows_error %}
             <div class="card border-danger my-3">
                 <div class="card-body text-danger">
                     <p>
-                        <strong>Votre fichier ne comporte pas le nombre minimal d'établissements pour être éligible à un
-                            import en masse</strong>
+                        <strong>Votre fichier ne comporte pas le nombre minimal d'établissements pour être
+                            importé</strong>
+                    </p>
+                    <p>
+                        L'import en masse étant géré par nos équipes, nous traitons uniquement les imports conséquents.
                     </p>
                     <p>Merci d'effectuer les créations de comptes manuellement</p>
 
@@ -68,7 +75,7 @@
                         <li>N'ajoutez pas de colonne</li>
 
                     </ul>
-                    <p><a href="/">Valider un autre fichier</a></p>
+
                 </div>
             </div>
 
@@ -132,7 +139,7 @@
                     <p>Notre système informatique ne sera pas en mesure de l'importer</p>
                     <p>Veuillez corriger les erreurs, et vérifier à nouveau la validité de votre fichier avant de le
                         faire parvenir à l'équipe de support</p>
-                    <p><a href="/">Valider un autre fichier</a></p>
+
 
                 </div>
             </div>
