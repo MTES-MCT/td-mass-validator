@@ -1,14 +1,14 @@
-ETABLISSMENTS_FIELDS = [
+ETABLISSEMENTS_FIELDS = [
     "siret",
-    "gerepid",
+    "gerepId",
     "companyTypes",
     "givenName",
     "contactEmail",
     "contactPhone",
-    "webSite",
+    "website",
 ]
 
-ROLE_FIELDS = [
+ROLES_FIELDS = [
     "siret",
     "email",
     "role",

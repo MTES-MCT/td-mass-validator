@@ -8,12 +8,12 @@ from django.core.validators import EmailValidator
 from .constants import (
     COMPANY_TYPES,
     ERROR_STR,
-    ETABLISSMENTS_FIELDS,
+    ETABLISSEMENTS_FIELDS,
     MAX_ETAB_COL,
     MAX_ROLE_COL,
     MIN_ETAB_ROW,
     MIN_ROLE_ROW,
-    ROLE_FIELDS,
+    ROLES_FIELDS,
     VALID_STR,
 )
 from .helpers import dict_read, format_csv_row, quote
@@ -76,10 +76,24 @@ class RowError:
     def _check_error_type(self, attribute, value):
         return value in ERROR_TYPES
 
+    @property
+    def displayable_value(self):
+        if self.field_name == "companyTypes" and isinstance(self.field_value, list):
+            return ",".join(self.field_value)
+        return self.field_value
+
     def as_str(self):
         return f"{self.field_name.capitalize()} error on row n°{self.row_number} value={self.field_value}"
 
     def verbose_error_field(self):
+        if self.field_name == "siret":
+            return "Format de siret incorrect, un siret est composé de 14 chiffres"
+        if self.field_name == "companyTypes":
+            return f"Le champ companyTypes accepte uniquement ADMIN ou MEMBER "
+        if self.field_name == "role":
+            return f"Le champ role accepte uniqument {','.join(COMPANY_TYPES)}"
+        if self.field_name in ["email", "contactEmail"]:
+            return "Valeur incorrecte, les adresses emails doivent être correctement formées"
         return "Valeur incorrecte"
 
     def verbose_error_missing_siret(self):
@@ -100,6 +114,7 @@ class RowError:
 @attr.s()
 class SiretError:
     siret = attr.ib()
+    row_number = attr.ib()
 
     @property
     def verbose(self):
@@ -110,12 +125,12 @@ class SiretError:
 class EtabRow(BaseRow):
     index = attr.ib()
     siret = attr.ib(default="")
-    gerepid = attr.ib(default="")
+    gerepId = attr.ib(default="")
     companyTypes = attr.ib(default=attr.Factory(list))
     givenName = attr.ib(default="")
     contactEmail = attr.ib(default="")
     contactPhone = attr.ib(default="")
-    webSite = attr.ib(default="")
+    website = attr.ib(default="")
 
     errors = attr.ib(default=attr.Factory(list))
     validated = attr.ib(default=False)
@@ -128,12 +143,12 @@ class EtabRow(BaseRow):
         return [
             str(self.index),
             self.siret,
-            self.gerepid,
+            self.gerepId,
             ",".join(self.companyTypes),
             self.givenName,
             self.contactEmail,
             self.contactPhone,
-            self.webSite,
+            self.website,
             ERROR_STR if not self.is_valid else VALID_STR,
         ]
 
@@ -141,16 +156,18 @@ class EtabRow(BaseRow):
 
         quoted = [
             quote(self.siret),
-            quote(self.gerepid),
+            quote(self.gerepId),
             ",".join(self.companyTypes),
             quote(self.givenName),
             quote(self.contactEmail),
             quote(self.contactPhone),
-            quote(self.webSite),
+            quote(self.website),
         ]
         return format_csv_row(quoted)
 
     def company_types_are_valid(self):
+        if not self.companyTypes:
+            return False
         return all([c_type in COMPANY_TYPES for c_type in self.companyTypes])
 
     def phone_number_is_valid(self):
@@ -228,6 +245,7 @@ class EtabRows(BaseRows):
     header = attr.ib(default="")
     rows = attr.ib(default=attr.Factory(list))
     is_valid = attr.ib(default=False)
+    has_enough_rows = attr.ib(default=True)
     siret_errors = attr.ib(default=attr.Factory(list))
     verbose_errors = attr.ib(default=attr.Factory(list))
 
@@ -242,6 +260,10 @@ class EtabRows(BaseRows):
 
     def validate(self):
         self.is_valid = True
+        if len(self.rows) < 10:
+            self.has_enough_rows = False
+            return
+
         for row in self:
             row.validate()
             if not row.is_valid:
@@ -255,7 +277,7 @@ class EtabRows(BaseRows):
 
     def as_csv(self):
         ret = []
-        ret.append(format_csv_row([quote(fn) for fn in ETABLISSMENTS_FIELDS]))
+        ret.append(format_csv_row([quote(fn) for fn in ETABLISSEMENTS_FIELDS]))
         for row in self:
             ret.append(row.as_csv())
         return ret
@@ -265,7 +287,7 @@ class EtabRows(BaseRows):
         etab_rows = []
         idx = 1
         for row in worksheet.iter_rows(min_row=MIN_ETAB_ROW, max_col=MAX_ETAB_COL):
-            data = dict_read(row, ETABLISSMENTS_FIELDS)
+            data = dict_read(row, ETABLISSEMENTS_FIELDS)
             if idx != 1:
                 etab_row = EtabRow.from_dict(idx, data)
 
@@ -380,7 +402,7 @@ class RoleRows(BaseRows):
 
     def as_csv(self):
         ret = []
-        ret.append(format_csv_row([quote(fn) for fn in ROLE_FIELDS]))
+        ret.append(format_csv_row([quote(fn) for fn in ROLES_FIELDS]))
         for row in self:
             ret.append(row.as_csv())
         return ret
@@ -398,7 +420,7 @@ class RoleRows(BaseRows):
         role_rows = []
         idx = 1
         for row in worksheet.iter_rows(min_row=MIN_ROLE_ROW, max_col=MAX_ROLE_COL):
-            data = dict_read(row, ROLE_FIELDS)
+            data = dict_read(row, ROLES_FIELDS)
             if idx != 1:
                 role_row = RoleRow.from_dict(idx, data)
 

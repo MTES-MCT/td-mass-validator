@@ -27,20 +27,47 @@
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% include "_form_snippet.html" with form=form %}
-                <p>Ce formulaire analyse votre fichier, aucune donnée ne sera importée dans Trackdéchets ni stockée sur ce serveur</p>
+                <p>Ce formulaire analyse votre fichier, aucune donnée ne sera importée dans Trackdéchets ni stockée sur
+                    ce serveur</p>
                 <button type="submit" class="btn btn-primary">Analyser et valider mon fichier</button>
 
             </form>
+        {% endif %}
+
+        {% if enough_rows_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        <strong>Votre fichier ne comporte pas le nombre minimal d'établissements pour être éligible à un
+                            import en masse</strong>
+                    </p>
+                    <p>Merci d'effectuer les créations de comptes manuellement</p>
+
+                </div>
+            </div>
         {% endif %}
 
         {% if parse_error %}
             <div class="card border-danger my-3">
                 <div class="card-body text-danger">
                     <p>
-                        Le format de votre fichier ou son contenu n'est pas reconnu.
+                        <strong>Le format de votre fichier ou son contenu n'est pas reconnu.</strong>
                     </p>
-                    <p>Le seul format que nous acceptons est le xlsx. Veuillez utiliser le gabarit téléchargé sur <a
-                            href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse ">la faq</a> </p>
+
+                    <p>
+                        Veuillez vérifier les points suivants :
+                    </p>
+                    <ul>
+                        <li>Le seul format que nous acceptons est le xlsx.</li>
+                        <li>Veuillez utiliser le gabarit téléchargeable sur <a
+                                href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse ">la
+                            faq</a>
+                        </li>
+                        <li>Supprimez les lignes d'exemples du gabarit</li>
+                        <li>Ne modifiez pas les en-têtes de colonne, les noms ou l'ordre des onglets</li>
+                        <li>N'ajoutez pas de colonne</li>
+
+                    </ul>
                     <p><a href="/">Valider un autre fichier</a></p>
                 </div>
             </div>
@@ -54,18 +81,46 @@
                     <p>
                         Les sirets suivants ne sont pas diffusibles ou référencent des établissements fermés.
                     </p>
-                    <p>{% for error in siret_errors %} {{ error.siret }}  {% endfor %}</p>
+
                     <p>
                         Pour chacun de ces établissements, veuillez:
-                                </p>
-                <ul>
-                    <li>vérifier qu'il ne s'agit pas d'un siret obsolète</li>
-                    <li>si le siret est bien actif, nous transmettre un certificat d'inscription au répertoire
-                        Sirene ou une attestation de situation au répertoire Sirene</li>
-                </ul>
+                    </p>
+                    <ul>
+                        <li>vérifier qu'il ne s'agit pas d'un siret obsolète</li>
+                        <li>si le siret est bien actif, nous transmettre un certificat d'inscription au répertoire
+                            Sirene ou une attestation de situation au répertoire Sirene
+                        </li>
+                    </ul>
 
                 </div>
             </div>
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr class="text-danger">
+                    <th scope="col">Onglet</th>
+                    <th scope="col">Numéro de ligne</th>
+                    <th scope="col">Colonne</th>
+                    <th scope="col">Valeur</th>
+                    <th scope="col">Erreur</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for error in siret_errors %}
+
+                    <tr class="text-danger">
+
+                        <td> Établissements</td>
+                        <td> {{ error.row_number }}</td>
+                        <td> Siret</td>
+                        <td> {{ error.siret }}</td>
+                        <td> Siret non diffusible ou établissement fermé</td>
+                    </tr>
+                    </tbody>
+                {% endfor %}
+
+            </table>
         {% endif %}
 
         {% if errors %}
@@ -100,7 +155,7 @@
                     <td> {{ error.tab }}</td>
                     <td> {{ error.row_number }}</td>
                     <td> {{ error.field_name }}</td>
-                    <td> {{ error.field_value }}</td>
+                    <td> {{ error.displayable_value }}</td>
                     <td> {{ error.verbose }}</td>
                 </tr>
                 </tbody>
