@@ -15,6 +15,3 @@ def test_upload_view_post(anon_client):
     with open(OK_FILE, "rb") as upload:
         res = anon_client.post("/", {"file": upload, "captcha": 2}, follow=True)
         assert res.status_code == 200
-        import pdb
-
-        pdb.set_trace()
