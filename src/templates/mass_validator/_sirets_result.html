@@ -1,0 +1,73 @@
+{% if state != "done" %}
+    <div hx-get="{% url "sirets_result" task_id %}"
+         hx-trigger="every 500ms"
+         hx-swap="outerHTML"
+    >
+        {% include "spinner.html" with percent=progress %}
+    </div>
+{% endif %}
+
+{% if state == "done" %}
+    {% if not siret_errors %}
+        <div class="card border-primary my-3">
+            <div class="card-body">
+                <p class="text-primary">
+                    👍 Votre fichier est valide !
+                </p>
+                <p class="text-primary">
+                    Vous pouvez le transmettre à l'adresse tech@trackdechets.beta.gouv.fr où
+                    il sera importé, en précisant que la validation a été effectuée.
+                </p>
+                <p class="text-primary">
+                    Si vous deviez le modifier, merci de le valider à nouveau avant envoi.
+                </p>
+            </div>
+        </div>
+    {% else %}
+                    <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+
+                    <p>
+                        Les sirets suivants ne sont pas diffusibles ou référencent des établissements inexistants ou fermés.
+                    </p>
+
+                    <p>
+                        Pour chacun de ces établissements, veuillez:
+                    </p>
+                    <ul>
+                        <li>vérifier qu'il ne s'agit pas d'un siret obsolète</li>
+                        <li>si le siret est bien actif, nous transmettre un certificat d'inscription au répertoire
+                            Sirene ou une attestation de situation au répertoire Sirene
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-danger">
+                <th scope="col">Onglet</th>
+                <th scope="col">Numéro de ligne</th>
+                <th scope="col">Colonne</th>
+                <th scope="col">Valeur</th>
+                <th scope="col">Erreur</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for error in siret_errors %}
+
+                <tr class="text-danger">
+
+                    <td> Établissements</td>
+                    <td> {{ error.row_number }}</td>
+                    <td> Siret</td>
+                    <td> {{ error.siret }}</td>
+                    <td> Siret fermé, inexistant ou non diffusible</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+
+        </table>
+    {% endif %}
+{% endif %}

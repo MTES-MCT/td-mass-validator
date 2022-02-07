@@ -11,6 +11,9 @@ httpx = "*"
 django-environ = "*"
 gunicorn = "*"
 whitenoise = "*"
+pytest-django = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 black = "*"
