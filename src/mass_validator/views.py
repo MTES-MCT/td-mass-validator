@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from openpyxl import load_workbook
 
-from core.celery import app
+from core.celery_app import app
 
 from .forms import UploadForm
 from .tasks import check_sirets
