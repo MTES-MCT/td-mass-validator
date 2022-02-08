@@ -86,12 +86,13 @@ class RowError:
         return f"{self.field_name.capitalize()} error on row n°{self.row_number} value={self.field_value}"
 
     def verbose_error_field(self):
+        company_types = ",".join(COMPANY_TYPES)
         if self.field_name == "siret":
             return "Format de siret incorrect, un siret est composé de 14 chiffres"
         if self.field_name == "companyTypes":
-            return "Le champ companyTypes accepte uniquement ADMIN ou MEMBER "
+            return f"Le champ companyTypes accepte uniquement les valeurs {company_types} séparées par des virgules"
         if self.field_name == "role":
-            return f"Le champ role accepte uniqument {','.join(COMPANY_TYPES)}"
+            return "Le champ role accepte uniquement ADMIN ou MEMBER "
         if self.field_name in ["email", "contactEmail"]:
             return "Valeur incorrecte, les adresses emails doivent être correctement formées"
         return "Valeur incorrecte"
