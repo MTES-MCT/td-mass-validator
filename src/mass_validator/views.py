@@ -54,13 +54,19 @@ class ValidateView(FormView):
 
     @property
     def has_errors(self):
-        return self.errors or self.parse_error or self.enough_rows_error
+        return (
+            self.errors
+            or self.parse_error
+            or self.enough_rows_error
+            or self.too_many_rows_error
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errors = []
         self.parse_error = False
         self.enough_rows_error = False
+        self.too_many_rows_error = False
         self.async_task_id = None
 
     def check_sirets_exists(self, etab_rows):
@@ -95,6 +101,11 @@ class ValidateView(FormView):
         # exits if customer is too lazy
         if not etab_rows.has_enough_rows:
             self.enough_rows_error = True
+            return
+
+        # exits if too many rows
+        if etab_rows.has_too_many_rows:
+            self.too_many_rows_error = True
             return
 
         role_rows = RoleRows.from_worksheet(ws_roles)
@@ -136,6 +147,7 @@ class ValidateView(FormView):
                 "parse_error": self.parse_error,
                 "has_errors": self.has_errors,
                 "enough_rows_error": self.enough_rows_error,
+                "too_many_rows_error": self.too_many_rows_error,
             }
         )
 

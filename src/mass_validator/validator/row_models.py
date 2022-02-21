@@ -247,6 +247,7 @@ class EtabRows(BaseRows):
     rows = attr.ib(default=attr.Factory(list))
     is_valid = attr.ib(default=False)
     has_enough_rows = attr.ib(default=True)
+    has_too_many_rows = attr.ib(default=False)
     siret_errors = attr.ib(default=attr.Factory(list))
     verbose_errors = attr.ib(default=attr.Factory(list))
 
@@ -264,7 +265,9 @@ class EtabRows(BaseRows):
         if len(self.rows) < 10:
             self.has_enough_rows = False
             return
-
+        if len(self.rows) > 500:
+            self.has_too_many_rows = True
+            return
         for row in self:
             row.validate()
             if not row.is_valid:

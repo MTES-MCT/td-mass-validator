@@ -53,6 +53,18 @@
                 </div>
             </div>
         {% endif %}
+        {% if too_many_rows_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        <strong>Votre fichier comporte trop d'établissements, le maximum étant de 500 pour des raisons techniques</strong>
+                    </p>
+
+                    <p>Merci de découper votre fichier en plusieurs comportant au maximum 500 établissements</p>
+
+                </div>
+            </div>
+        {% endif %}
 
         {% if parse_error %}
             <div class="card border-danger my-3">
