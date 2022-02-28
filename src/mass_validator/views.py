@@ -38,6 +38,7 @@ def validate_header(first_row, expected_header):
     """Validate first worksheet row matches `expected_header`"""
 
     header = [cell.value for cell in first_row]
+
     if header != expected_header:
         raise InvalidHeaderException
 
@@ -77,7 +78,8 @@ class ValidateView(FormView):
     def parse(self, file):
         try:
             wb = load_xlsx(file)
-        except (BadZipFile, KeyError, TabException):
+        except (BadZipFile, KeyError, TabException) as e:
+
             self.parse_error = True
             return
 
@@ -92,6 +94,7 @@ class ValidateView(FormView):
             validate_header(etab_first_row, ETABLISSEMENTS_FIELDS)
             validate_header(role_first_row, ROLES_FIELDS)
         except InvalidHeaderException:
+
             self.parse_error = True
             return
 
