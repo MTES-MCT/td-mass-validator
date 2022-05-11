@@ -14,6 +14,10 @@ from .validator.constants import ETABLISSEMENTS_FIELDS, ROLES_FIELDS
 from .validator.row_models import EtabRows, RoleRows
 
 
+class FileReadingException(Exception):
+    pass
+
+
 class TabException(Exception):
     pass
 
@@ -23,7 +27,16 @@ class InvalidHeaderException(Exception):
 
 
 def load_xlsx(file):
-    wb = load_workbook(filename=file)
+    try:
+        wb = load_workbook(
+            filename=file,
+            read_only=True,
+            keep_links=False,
+            data_only=True,
+            keep_vba=False,
+        )
+    except ValueError:
+        raise FileReadingException
     sheetnames = wb.sheetnames
     if len(sheetnames) != 2:
         raise TabException
@@ -66,6 +79,7 @@ class ValidateView(FormView):
         super().__init__(*args, **kwargs)
         self.errors = []
         self.parse_error = False
+        self.parse_error_message = ""
         self.enough_rows_error = False
         self.too_many_rows_error = False
         self.async_task_id = None
@@ -78,7 +92,7 @@ class ValidateView(FormView):
     def parse(self, file):
         try:
             wb = load_xlsx(file)
-        except (BadZipFile, KeyError, TabException) as e:
+        except (BadZipFile, KeyError, TabException, FileReadingException) as e:
 
             self.parse_error = True
             return
