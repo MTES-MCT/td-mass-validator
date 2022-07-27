@@ -45,7 +45,7 @@ def process_field(value, field_name):
             cleaned = f"0{cleaned}"
         return phone_formatter(cleaned)
     if field_name == "companyTypes":
-        return value.replace(" ", "").upper().split(",")
+        return str(value).replace(" ", "").upper().split(",")
     if field_name in ["email", "contactEmail"]:
         return str(value).replace(" ", "").strip().lower()
     if field_name == "siret":
