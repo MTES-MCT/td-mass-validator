@@ -112,6 +112,9 @@ cython_debug/
 # PyCharm
 .idea/
 
+# certificates
+*.pem
+
 src/csv/*
 src/*.xlsx
 src/*.xlsm
