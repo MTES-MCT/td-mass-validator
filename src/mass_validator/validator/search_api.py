@@ -1,25 +1,20 @@
-import time
-
-import httpx
-
-SOCIAL_GOUV_API_BASE_URL = (
-    "https://search-recherche-entreprises.fabrique.social.gouv.fr"
-)
+from django.conf import settings
+from elasticsearch7 import Elasticsearch
 
 ACTIVE = "A"
 
+CERT_PATH = "certs.pem"
+es = Elasticsearch(settings.TD_COMPANY_ELASTICSEARCH_URL, ca_certs=CERT_PATH)
+
 
 def check_siret(siret):
-    """Check siret exists and is not closed"""
+    body = {"query": {"bool": {"must": [{"match": {"siret": siret}}]}}}
+    resp = es.search(index=settings.TD_COMPANY_ELASTICSEARCH_INDEX, body=body)
     try:
-        # default 5s timeout
-        r = httpx.get(f"{SOCIAL_GOUV_API_BASE_URL}/api/v1/etablissement/{siret}")
-    except httpx.RequestError:
+        hits = resp["hits"]["hits"]
+    except IndexError:
         return False
-    time.sleep(0.05)  # let api rest a little
-    if (
-        r.status_code == 200
-        and r.json().get("etatAdministratifEtablissement") == ACTIVE
-    ):
-        return True
+    for hit in hits:
+        if hit.get("_source", {}).get("etatAdministratifEtablissement", None) == ACTIVE:
+            return True
     return False

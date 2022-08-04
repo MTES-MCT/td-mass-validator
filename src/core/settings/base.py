@@ -15,8 +15,6 @@ environ.Env.read_env()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ADMINS = [el.split(":") for el in env.list("DJANGO_ADMINS", default=[])]
-
 
 # Application definition
 
@@ -117,3 +115,6 @@ STATICFILES_FINDERS = (
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+TD_COMPANY_ELASTICSEARCH_URL = env("TD_COMPANY_ELASTICSEARCH_URL")
+TD_COMPANY_ELASTICSEARCH_INDEX = env("TD_COMPANY_ELASTICSEARCH_INDEX")
