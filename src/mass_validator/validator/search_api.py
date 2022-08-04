@@ -3,7 +3,7 @@ from elasticsearch7 import Elasticsearch
 
 ACTIVE = "A"
 
-CERT_PATH = "certs.pem"
+CERT_PATH = "/app/src/certs.pem"
 es = Elasticsearch(settings.TD_COMPANY_ELASTICSEARCH_URL, ca_certs=CERT_PATH)
 
 
