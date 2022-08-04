@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import environ
@@ -14,7 +15,6 @@ environ.Env.read_env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 
 # Application definition
 
@@ -118,3 +118,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TD_COMPANY_ELASTICSEARCH_URL = env("TD_COMPANY_ELASTICSEARCH_URL")
 TD_COMPANY_ELASTICSEARCH_INDEX = env("TD_COMPANY_ELASTICSEARCH_INDEX")
+TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT = env(
+    "TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT"
+)
+
+
+CERT_PATH = str(BASE_DIR / "certs.pem")
+if not os.path.exists(CERT_PATH):
+    c = TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT.split("\\n")
+    with open(CERT_PATH, "w") as f:
+        f.write("\n".join(c))
