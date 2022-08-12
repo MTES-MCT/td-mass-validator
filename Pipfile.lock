@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7e9fa8a1c82d38970a7946cae6db9110582ee5a9b7ae5c023f5c7e9c4d77b60a"
+            "sha256": "e71c9847cfcc27b658f27007a2527d694c22f86154620a3efe12e66b495e494d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -119,11 +119,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:a67a793ff6827fd373555537dca0da293a63a316fe34cb7f367f898ccca3c3ae",
-                "sha256:ca54ebedfcbc60d191391efbf02ba68fb52165b8bf6ccd6fe71f098cac1fe59e"
+                "sha256:41bd65a9e5f8a89cdbfa7a7bba45cd7431ae89e750af82dea8a35fd1a7ecbe66",
+                "sha256:9c6d5ad36be798e562ddcaa6b17b1c3ff2d3c4f529a47432b69fb9a30f847461"
             ],
             "index": "pypi",
-            "version": "==4.0.6"
+            "version": "===4.0.7"
         },
         "django-environ": {
             "hashes": [
@@ -270,10 +270,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7",
-                "sha256:e68985985296d9a66a881eb3193b0906246245294a881e7c8afe623866ac6a5c"
+                "sha256:bc824559e43e8ab983426a49525079d186b25372ff63aa3430ccd527d95edc3a",
+                "sha256:d9b245e63af49c4e51afdec5402f56b99c0cb483a84a12bb8b7db980386baade"
             ],
-            "version": "==2022.1"
+            "version": "==2022.2"
         },
         "redis": {
             "hashes": [
@@ -295,11 +295,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:7c7854ee1429a240090297628dc9f75b35318d193537968e2dc14010ee2f5bca",
-                "sha256:dc2662692f47d99cb8ae15a784529adeed535bcd7c277fee0beccf961522baf6"
+                "sha256:378dcbfcc78b81432934fbd684ece21a82cd4b135315698732f7c8a4b97f81a9",
+                "sha256:7d9ae33bf128569f460a0745e87072a1996f33c9180316c20cc08b130ce816a6"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==63.4.1"
+            "version": "==64.0.1"
         },
         "six": {
             "hashes": [
