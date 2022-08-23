@@ -142,6 +142,7 @@ class EtabRow(BaseRow):
     givenName = attr.ib(default="")
     contactEmail = attr.ib(default="")
     contactPhone = attr.ib(default="")
+    contact = attr.ib(default="")
     website = attr.ib(default="")
 
     errors = attr.ib(default=attr.Factory(list))
@@ -160,6 +161,7 @@ class EtabRow(BaseRow):
             self.givenName,
             self.contactEmail,
             self.contactPhone,
+            self.contact,
             self.website,
             ERROR_STR if not self.is_valid else VALID_STR,
         ]
@@ -173,6 +175,7 @@ class EtabRow(BaseRow):
             quote(self.givenName),
             quote(self.contactEmail),
             quote(self.contactPhone),
+            quote(self.contact),
             quote(self.website),
         ]
         return format_csv_row(quoted)
