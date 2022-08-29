@@ -5,6 +5,7 @@ ETABLISSEMENTS_FIELDS = [
     "givenName",
     "contactEmail",
     "contactPhone",
+    "contact",
     "website",
 ]
 
