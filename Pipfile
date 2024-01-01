@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "===4.1.6"
+django = ">=4.2"
 attrs = "*"
 openpyxl = "*"
 httpx = "*"
@@ -17,9 +17,8 @@ redis = "*"
 elasticsearch7 = "*"
 
 [dev-packages]
-black = "*"
-flake8 = "*"
+ruff = "*"
 isort = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"

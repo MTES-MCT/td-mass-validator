@@ -7,7 +7,6 @@ CERT_PATH = str(settings.BASE_DIR / "certs.pem")
 
 
 def check_siret(siret):
-
     es = Elasticsearch(settings.TD_COMPANY_ELASTICSEARCH_URL, ca_certs=CERT_PATH)
 
     body = {"query": {"bool": {"must": [{"match": {"siret": siret}}]}}}
