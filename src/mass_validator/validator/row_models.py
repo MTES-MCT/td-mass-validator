@@ -167,7 +167,6 @@ class EtabRow(BaseRow):
         ]
 
     def as_csv(self):
-
         quoted = [
             quote(self.siret),
             quote(self.gerepId),
@@ -202,7 +201,6 @@ class EtabRow(BaseRow):
             return False
 
     def validate(self):
-
         if not self.siret_is_valid():
             self.errors.append(
                 RowError(
@@ -338,7 +336,6 @@ class RoleRow(BaseRow):
         ]
 
     def as_csv(self):
-
         quoted = [
             quote(self.siret),
             quote(self.email),
@@ -436,7 +433,6 @@ class RoleRows(BaseRows):
         return ret
 
     def validate(self, etab_sirets):
-
         self.is_valid = True
         for row in self:
             row.validate(etab_sirets)
@@ -448,7 +444,6 @@ class RoleRows(BaseRows):
         seen = set()
         duplicates_idx = []
         for idx, pair in enumerate(pairs):
-
             if pair in seen:
                 duplicates_idx.append(idx)
                 self.rows[idx].mark_as_duplicate()

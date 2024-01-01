@@ -14,7 +14,6 @@ def check_sirets(data):
     errors = []
     count = len(data)
     for idx, el in enumerate(data):
-
         siret_exists = check_siret(el["siret"])
 
         current_task.update_state(

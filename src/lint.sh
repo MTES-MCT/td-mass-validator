@@ -1,3 +1,3 @@
 isort .
-black .
-flake8 .
+ruff format .
+ruff check .

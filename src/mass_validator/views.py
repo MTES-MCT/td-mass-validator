@@ -92,8 +92,7 @@ class ValidateView(FormView):
     def parse(self, file):
         try:
             wb = load_xlsx(file)
-        except (BadZipFile, KeyError, TabException, FileReadingException) as e:
-
+        except (BadZipFile, KeyError, TabException, FileReadingException):
             self.parse_error = True
             return
 
@@ -108,7 +107,6 @@ class ValidateView(FormView):
             validate_header(etab_first_row, ETABLISSEMENTS_FIELDS)
             validate_header(role_first_row, ROLES_FIELDS)
         except InvalidHeaderException:
-
             self.parse_error = True
             return
 
@@ -147,7 +145,6 @@ class ValidateView(FormView):
             self.check_sirets_exists(etab_rows)
 
     def form_valid(self, form):
-
         file = self.request.FILES["file"]
 
         self.parse(file)
