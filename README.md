@@ -15,7 +15,7 @@ Ce projet permet de valider les fichiers d'import avant envoi, afin d'économise
 
 # Pré-requis
 
-- Python > 3.9
+- Python > 3.11
 - Redis
 - pipenv
 
