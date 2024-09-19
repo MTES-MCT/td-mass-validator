@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block body %}
+    <div class="container">
+
+        <h1>Validation de fichier d'import en masse</h1>
+        <div class="card border-primary my-3">
+            <div class="card-body">
+                <p class="text-primary">Ce formulaire vous permet de vérifier le format et les données des fichiers
+                    d'import en masse de Trackdéchets avant de les transmettre à l'équipe de support.
+                </p>
+                <p class="text-primary">
+                    Merci de vous référer aux indications de <a
+                        href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse">la
+                    faq Trackdéchets</a> et notamment d'utiliser le modèle de fichier fourni sans en modifier les
+                    intitulés de colonnes et onglets.
+                </p>
+                <p class="text-primary">En deça du nombre minimal d'établissements requis, merci d'effectuer les
+                    créations de comptes manuellement.</p>
+                <p class="text-primary">Si vous avez besoin d'un administrateur ayant une vue d'ensemble sur les établissements,
+                    vous devez l'ajouter dans l'onglet rôles pour chaque établissement ou l'inviter manuellement depuis tous
+                    les établissements une fois l'import rélaisé par nos équipes.
+                </p>
+            </div>
+        </div>
+
+        {% if not has_errors %}
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include "_form_snippet.html" with form=form %}
+                <p>Ce formulaire analyse votre fichier, aucune donnée ne sera importée dans Trackdéchets ni stockée sur
+                    ce serveur</p>
+                <button type="submit" class="btn btn-primary">Analyser et valider mon fichier</button>
+
+            </form>
+        {% endif %}
+
+        {% if has_errors %}
+            <p><a href="/">Valider un autre fichier</a></p>
+        {% endif %}
+
+        {% if enough_rows_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        <strong>Votre fichier ne comporte pas le nombre minimal d'établissements pour être
+                            importé</strong>
+                    </p>
+                    <p>
+                        L'import en masse étant géré par nos équipes, nous traitons uniquement les imports conséquents.
+                    </p>
+                    <p>Merci d'effectuer les créations de comptes manuellement</p>
+
+                </div>
+            </div>
+        {% endif %}
+        {% if too_many_rows_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        <strong>Votre fichier comporte trop d'établissements, le maximum étant de 500 pour des raisons
+                            techniques</strong>
+                    </p>
+
+                    <p>Merci de découper votre fichier en plusieurs comportant au maximum 500 établissements</p>
+
+                </div>
+            </div>
+        {% endif %}
+
+        {% if parse_error %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        <strong>Le format de votre fichier ou son contenu n'est pas reconnu.</strong>
+                    </p>
+
+                    <p>
+                        Veuillez vérifier les points suivants :
+                    </p>
+                    <ul>
+                        <li>Le modèle de fichier évolue à partir du 24 septembre 2024, l'onglet établissement comporte 3 nouvelles colonnes :
+                            collectorTypes, wasteProcessorTypes, wasteVehiclesTypes
+                        </li>
+                        <li>Le seul format que nous acceptons est le xlsx.</li>
+                        <li>Veuillez utiliser le gabarit téléchargeable sur <a
+                                href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse ">la
+                            faq</a>
+                        </li>
+                        <li>Supprimez les lignes d'exemples du gabarit</li>
+                        <li>Ne modifiez pas les en-têtes de colonne, les noms ou l'ordre des onglets</li>
+                        <li>N'ajoutez pas de colonne</li>
+                        <li>Certains logiciels peuvent générer des fichiers xlsx que nous n'arrivons pas à lire, vous
+                            pouvez tenter de copier/coller les 2 feuilles dans un nouveau fichier xlsx en séléctionant
+                            "collage spécial > valeurs"
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+        {% endif %}
+
+
+        {% if errors %}
+            <div class="card border-danger my-3">
+                <div class="card-body text-danger">
+                    <p>
+                        Votre fichier comporte une ou plusieurs erreurs
+                    </p>
+                    <p>Notre système informatique ne sera pas en mesure de l'importer</p>
+                    <p>Veuillez corriger les erreurs, et vérifier à nouveau la validité de votre fichier avant de le
+                        faire parvenir à l'équipe de support</p>
+
+
+                </div>
+            </div>
+            <table class="table table-bordered table-hover">
+            <thead>
+            <tr class="text-danger">
+                <th scope="col">Onglet</th>
+                <th scope="col">Numéro de ligne</th>
+                <th scope="col">Colonne</th>
+                <th scope="col">Valeur</th>
+                <th scope="col">Erreur</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for error in errors %}
+
+                <tr class="text-danger">
+
+                    <td> {{ error.tab }}</td>
+                    <td> {{ error.row_number }}</td>
+                    <td> {{ error.field_name }}</td>
+                    <td> {{ error.displayable_value }}</td>
+                    <td> {{ error.verbose }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        {% endif %}
+        </table>
+    </div>
+{% endblock %}

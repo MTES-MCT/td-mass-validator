@@ -11,18 +11,34 @@
 
 </head>
 <body class="d-flex flex-column min-vh-100">
+
+{% if request.connected %}
+    <div class="alert alert-primary" role="alert">
+    <p class="container">
+        Vous êtes connecté(e) -  Avec de grands pouvoirs viennent de grandes responsabilités…</p>
+    </div>
+
+{% endif %}
+
 <header class="container py-1 mb-4">
     <img src="{% static "img/mtes-logo.svg" %}" alt="MTES">
     <a href="/"><img src="{% static "img/trackdechets-logo.png" %}" alt="Trackdéchets"></a>
 
 </header>
+{% if request.connected %}
+    <div  class="container">
+        <a href="{% url "home" %}">Import en masse</a>
+        <a href="{%  url "validate_update_file" %}">Modification en masse</a>
+    </div>
+
+{% endif %}
 {% block body %}
 {% endblock %}
 <footer style="background-color: #0a53be" class="py-4 mt-auto">
-    <div class="container text-white" >
+    <div class="container text-white">
         <p>Ce site n'utilise aucun cookie traceur et ne stocke aucune donnée personnelle</p>
     </div>
 </footer>
-    <script src="{% static "htmx1.6.1/htmx.min.js" %}"></script>
+<script src="{% static "htmx1.6.1/htmx.min.js" %}"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 import os
 from itertools import islice
 
+from mass_validator.validator.constants import TYPES_FIELDS
+
 
 def quote(v):
     """Let's double quote all the things"""
@@ -44,7 +46,7 @@ def process_field(value, field_name):
         if len(cleaned) == 9 and not cleaned.startswith("0"):
             cleaned = f"0{cleaned}"
         return phone_formatter(cleaned)
-    if field_name == "companyTypes":
+    if field_name in TYPES_FIELDS:
         return str(value).replace(" ", "").upper().split(",")
     if field_name in ["email", "contactEmail"]:
         return str(value).replace(" ", "").strip().lower()
@@ -63,7 +65,9 @@ def clean_from_funky_chars(value):
 def dict_read(row, fields_config):
     """Co,vert row read form openpyxl to dict according to field_config file names"""
     data = {}
+
     for i, cell in enumerate(row):
         field_name = fields_config[i]
+
         data[field_name] = clean_from_funky_chars(process_field(cell.value, field_name))
     return data

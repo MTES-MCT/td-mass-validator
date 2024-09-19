@@ -3,10 +3,14 @@ from pathlib import Path
 
 import environ
 
+BASE_DIR = Path(__file__).resolve().parents[2]
+
 env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(BASE_DIR / ".env")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 environ.Env.read_env()
 
@@ -38,6 +42,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "core.middleware.ConnectionMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -118,10 +123,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TD_COMPANY_ELASTICSEARCH_URL = env("TD_COMPANY_ELASTICSEARCH_URL")
 TD_COMPANY_ELASTICSEARCH_INDEX = env("TD_COMPANY_ELASTICSEARCH_INDEX")
-TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT = env(
-    "TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT"
-)
+TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT = env("TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT")
 
+USERNAME = env("USER_NAME")
+PASSWORD = env("PASSWORD")
 
 CERT_PATH = str(BASE_DIR / "certs.pem")
 if not os.path.exists(CERT_PATH):

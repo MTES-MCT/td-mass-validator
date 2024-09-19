@@ -5,15 +5,14 @@
 {% block body %}
     <div class="container">
 
-        <h1>Validation de fichier d'import en masse</h1>
-
-
+        <h1>Validation de fichier de modification en masse de profils et sous-profils</h1>
 
 
         <div class="card border-primary my-3">
             <div class="card-body">
                 <p class="text-primary">Ce formulaire vous permet de vérifier le format et les données des fichiers
-                    d'import en masse de Trackdéchets avant de les transmettre à l'équipe de support.
+                    de modification en masse des profils et sous profils d'établissemntde Trackdéchets avant de les
+                    transmettre à l'équipe de support.
                 </p>
                 <p class="text-primary">
                     Merci de vous référer aux indications de <a
@@ -23,8 +22,10 @@
                 </p>
                 <p class="text-primary">En deça du nombre minimal d'établissements requis, merci d'effectuer les
                     créations de comptes manuellement.</p>
-                <p class="text-primary">Si vous avez besoin d'un administrateur ayant une vue d'ensemble sur les établissements,
-                    vous devez l'ajouter dans l'onglet rôles pour chaque établissement ou l'inviter manuellement depuis tous
+                <p class="text-primary">Si vous avez besoin d'un administrateur ayant une vue d'ensemble sur les
+                    établissements,
+                    vous devez l'ajouter dans l'onglet rôles pour chaque établissement ou l'inviter manuellement depuis
+                    tous
                     les établissements une fois l'import rélaisé par nos équipes.
                 </p>
             </div>
@@ -41,8 +42,33 @@
             </form>
         {% endif %}
 
+
+
         {% if has_errors %}
-            <p><a href="/">Valider un autre fichier</a></p>
+            <p><a href="{% url "validate_update_file" %}">Valider un autre fichier</a></p>
+        {% endif %}
+
+        {% if success %}
+            <div class="card border-primary my-3">
+                <div class="card-body">
+                    <p class="text-primary">
+                        👍 Votre fichier est valide !
+                    </p>
+                    <p class="text-primary">
+                        Vous pouvez le transmettre à l'adresse contact@trackdechets.beta.gouv.fr où
+                        il sera importé, en précisant que la validation a été effectuée.
+                    </p>
+                    <p class="text-primary">
+                        Si vous deviez le modifier, merci de le valider à nouveau avant envoi.
+                    </p>
+                           {% if  json_export %}
+                               <p>Vous pouvez copier-coller le contenu ci-dessous dans le champ approprié de l'admin Trackdéchets</p>
+            <textarea style="border: 1px solid black" cols="100"  rows="30">
+                {{ json_export }}
+            </textarea>
+        {% endif %}
+                </div>
+            </div>
         {% endif %}
 
         {% if enough_rows_error %}
@@ -60,6 +86,7 @@
                 </div>
             </div>
         {% endif %}
+
         {% if too_many_rows_error %}
             <div class="card border-danger my-3">
                 <div class="card-body text-danger">
@@ -85,9 +112,7 @@
                         Veuillez vérifier les points suivants :
                     </p>
                     <ul>
-                        <li>Le modèle de fichier évolue à partir du 30 août 2022, l'onglet établissement comporte une
-                            colonne contact.
-                        </li>
+
                         <li>Le seul format que nous acceptons est le xlsx.</li>
                         <li>Veuillez utiliser le gabarit téléchargeable sur <a
                                 href="https://faq.trackdechets.fr/informations-generiques/sinscrire/je-cree-de-compte/creer-des-comptes-en-masse ">la
@@ -97,7 +122,7 @@
                         <li>Ne modifiez pas les en-têtes de colonne, les noms ou l'ordre des onglets</li>
                         <li>N'ajoutez pas de colonne</li>
                         <li>Certains logiciels peuvent générer des fichiers xlsx que nous n'arrivons pas à lire, vous
-                            pouvez tenter de copier/coller les 2 feuilles dans un nouveau fichier xlsx en séléctionant
+                            pouvez tenter de copier/coller la feuille xlsx dans un nouveau fichier xlsx en séléctionant
                             "collage spécial > valeurs"
                         </li>
 
