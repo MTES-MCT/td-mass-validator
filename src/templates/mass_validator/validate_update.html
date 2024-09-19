@@ -5,13 +5,13 @@
 {% block body %}
     <div class="container">
 
-        <h1>Validation de fichier de modification en masse de profils et sous-profils</h1>
+        <h1>Validation de fichier de modification de profils et sous-profils</h1>
 
 
         <div class="card border-primary my-3">
             <div class="card-body">
                 <p class="text-primary">Ce formulaire vous permet de vérifier le format et les données des fichiers
-                    de modification en masse des profils et sous profils d'établissemntde Trackdéchets avant de les
+                    de modification en masse des profils et sous profils d'établissement de Trackdéchets avant de les
                     transmettre à l'équipe de support.
                 </p>
                 <p class="text-primary">
@@ -21,17 +21,12 @@
                     intitulés de colonnes et onglets.
                 </p>
                 <p class="text-primary">En deça du nombre minimal d'établissements requis, merci d'effectuer les
-                    créations de comptes manuellement.</p>
-                <p class="text-primary">Si vous avez besoin d'un administrateur ayant une vue d'ensemble sur les
-                    établissements,
-                    vous devez l'ajouter dans l'onglet rôles pour chaque établissement ou l'inviter manuellement depuis
-                    tous
-                    les établissements une fois l'import rélaisé par nos équipes.
-                </p>
+                    modifications de comptes manuellement.</p>
+                
             </div>
         </div>
 
-        {% if not has_errors %}
+        {% if not has_errors and form %}
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% include "_form_snippet.html" with form=form %}
