@@ -11,11 +11,7 @@ from core.celery_app import app
 
 from .forms import LogMeInForm, UploadCreationForm, UploadUpdateForm
 from .tasks import check_sirets
-from .validator.constants import (
-    ETABLISSEMENTS_CREATE_FIELDS,
-    ETABLISSEMENTS_UPDATE_FIELDS,
-    ROLES_FIELDS,
-)
+from .validator.constants import ETABLISSEMENTS_CREATE_FIELDS, ETABLISSEMENTS_UPDATE_FIELDS, ROLES_FIELDS
 from .validator.row_models import EtabCreateRows, EtabUpdateRows, RoleRows
 
 
@@ -131,6 +127,7 @@ class ValidateCreationFileView(FormView):
             validate_header(role_first_row, ROLES_FIELDS)
         except InvalidHeaderException:
             self.parse_error = True
+            breakpoint()
             return
 
         etab_rows = EtabCreateRows.from_worksheet(ws_etablissements)

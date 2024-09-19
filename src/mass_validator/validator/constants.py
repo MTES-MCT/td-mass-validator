@@ -11,7 +11,7 @@ TYPES_FIELDS = [
 ]
 
 ETABLISSEMENTS_CREATE_FIELDS = [
-    "orgId",
+    "siret",
     "gerepId",
     COMPANY_TYPES_FIELD,
     COLLECTOR_TYPES_FIELD,

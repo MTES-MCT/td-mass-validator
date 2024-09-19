@@ -107,30 +107,15 @@ class RowError:
         error_config = {
             "siret": "Format de siret incorrect, un siret est composé de 14 chiffres",
             "companyTypes": f"Le champ companyTypes accepte uniquement les valeurs {company_types} séparées par des virgules",
-            "collectorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {collector_types} séparées par des virgules",
-            "wasteProcessorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {waste_processor_types} séparées par des virgules",
-            "wasteVehiclesTypes": f"Le champ wasteVehiclesTypes accepte uniquement les valeurs {waste_vehicles_types} séparées par des virgules",
+            "collectorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {collector_types} séparées par des virgules. Le champ companyTypes doit contenir COLLECTOR.",
+            "wasteProcessorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {waste_processor_types} séparées par des virgules.Le champ companyTypes doit contenir WASTE_PROCESSOR.",
+            "wasteVehiclesTypes": f"Le champ wasteVehiclesTypes accepte uniquement les valeurs {waste_vehicles_types} séparées par des virgules. Le champ companyTypes doit contenir WASTE_VEHICLES.",
             "role": f"Le champ role accepte uniquement les valeurs {user_roles}",
             "email": "Valeur incorrecte, les adresses emails doivent être correctement formées",
             "contactEmail": "Valeur incorrecte, les adresses emails doivent être correctement formées",
         }
 
         return error_config.get(self.field_name)
-        # if self.field_name == "siret":
-        #     return "Format de siret incorrect, un siret est composé de 14 chiffres"
-        # if self.field_name == "companyTypes":
-        #     return f"Le champ companyTypes accepte uniquement les valeurs {company_types} séparées par des virgules"
-        # if self.field_name == "collectorTypes":
-        #     return f"Le champ collectorTypes accepte uniquement les valeurs {collector_types} séparées par des virgules"
-        # if self.field_name == "wasteProcessorTypes":
-        #     return f"Le champ collectorTypes accepte uniquement les valeurs {waste_processor_types} séparées par des virgules"
-        # if self.field_name == "wasteVehiclesTypes":
-        #     return f"Le champ wasteVehiclesTypes accepte uniquement les valeurs {waste_vehicles_types} séparées par des virgules"
-        # if self.field_name == "role":
-        #     return f"Le champ role accepte uniquement les valeurs {user_roles}"
-        # if self.field_name in ["email", "contactEmail"]:
-        #     return "Valeur incorrecte, les adresses emails doivent être correctement formées"
-        # return "Valeur incorrecte"
 
     def verbose_error_missing_siret(self):
         return "Siret absent de l'onglet établissements"

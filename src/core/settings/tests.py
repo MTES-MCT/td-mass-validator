@@ -12,3 +12,6 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 CELERY_TASK_ALWAYS_EAGER = True
+
+USERNAME = "joe"
+PASSWORD = "pass"
