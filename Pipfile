@@ -19,6 +19,12 @@ elasticsearch7 = "*"
 [dev-packages]
 ruff = "*"
 isort = "*"
+djlint = "*"
+pywatchman = "*"
+django-debug-toolbar = "*"
+django-extensions = "*"
+bandit = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.11"

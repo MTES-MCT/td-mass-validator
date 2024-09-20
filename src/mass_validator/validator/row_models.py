@@ -6,17 +6,29 @@ from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 
 from .constants import (
+    COLLECTOR_TYPES,
     COMPANY_TYPES,
     ERROR_STR,
-    ETABLISSEMENTS_FIELDS,
-    MAX_ETAB_COL,
+    ETABLISSEMENTS_CREATE_FIELDS,
+    ETABLISSEMENTS_UPDATE_FIELDS,
+    MAX_ETAB_CREATE_COL,
+    MAX_ETAB_UPDATE_COL,
     MAX_ROLE_COL,
     MIN_ETAB_ROW,
     MIN_ROLE_ROW,
     ROLES_FIELDS,
+    USER_ROLES,
     VALID_STR,
+    WASTE_PROCESSOR_TYPES,
+    WASTE_VEHICLE_TYPES,
 )
 from .helpers import dict_read, format_csv_row, quote
+
+company_types = ",".join(COMPANY_TYPES)
+collector_types = ",".join(COLLECTOR_TYPES)
+waste_processor_types = ",".join(WASTE_PROCESSOR_TYPES)
+waste_vehicles_types = ",".join(WASTE_VEHICLE_TYPES)
+user_roles = ",".join(USER_ROLES)
 
 phone_re = re.compile(r"^(0[1-9])(?:[ _.-]?(\d{2})){4}$")
 
@@ -92,16 +104,18 @@ class RowError:
         return f"{self.field_name.capitalize()} error on row n°{self.row_number} value={self.field_value}"
 
     def verbose_error_field(self):
-        company_types = ",".join(COMPANY_TYPES)
-        if self.field_name == "siret":
-            return "Format de siret incorrect, un siret est composé de 14 chiffres"
-        if self.field_name == "companyTypes":
-            return f"Le champ companyTypes accepte uniquement les valeurs {company_types} séparées par des virgules"
-        if self.field_name == "role":
-            return "Le champ role accepte uniquement ADMIN ou MEMBER "
-        if self.field_name in ["email", "contactEmail"]:
-            return "Valeur incorrecte, les adresses emails doivent être correctement formées"
-        return "Valeur incorrecte"
+        error_config = {
+            "siret": "Format de siret incorrect, un siret est composé de 14 chiffres",
+            "companyTypes": f"Le champ companyTypes accepte uniquement les valeurs {company_types} séparées par des virgules",
+            "collectorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {collector_types} séparées par des virgules. Le champ companyTypes doit contenir COLLECTOR.",
+            "wasteProcessorTypes": f"Le champ collectorTypes accepte uniquement les valeurs {waste_processor_types} séparées par des virgules.Le champ companyTypes doit contenir WASTE_PROCESSOR.",
+            "wasteVehiclesTypes": f"Le champ wasteVehiclesTypes accepte uniquement les valeurs {waste_vehicles_types} séparées par des virgules. Le champ companyTypes doit contenir WASTE_VEHICLES.",
+            "role": f"Le champ role accepte uniquement les valeurs {user_roles}",
+            "email": "Valeur incorrecte, les adresses emails doivent être correctement formées",
+            "contactEmail": "Valeur incorrecte, les adresses emails doivent être correctement formées",
+        }
+
+        return error_config.get(self.field_name)
 
     def verbose_error_missing_siret(self):
         return "Siret absent de l'onglet établissements"
@@ -134,11 +148,14 @@ class SiretError:
 
 
 @attr.s()
-class EtabRow(BaseRow):
+class EtabCreateRow(BaseRow):
     index = attr.ib()
     siret = attr.ib(default="")
     gerepId = attr.ib(default="")
     companyTypes = attr.ib(default=attr.Factory(list))
+    collectorTypes = attr.ib(default=attr.Factory(list))
+    wasteProcessorTypes = attr.ib(default=attr.Factory(list))
+    wasteVehiclesTypes = attr.ib(default=attr.Factory(list))
     givenName = attr.ib(default="")
     contactEmail = attr.ib(default="")
     contactPhone = attr.ib(default="")
@@ -158,6 +175,9 @@ class EtabRow(BaseRow):
             self.siret,
             self.gerepId,
             ",".join(self.companyTypes),
+            ",".join(self.collectorTypes),
+            ",".join(self.wasteProcessorTypes),
+            ",".join(self.wasteVehiclesTypes),
             self.givenName,
             self.contactEmail,
             self.contactPhone,
@@ -171,6 +191,9 @@ class EtabRow(BaseRow):
             quote(self.siret),
             quote(self.gerepId),
             ",".join(self.companyTypes),
+            ",".join(self.collectorTypes),
+            ",".join(self.wasteProcessorTypes),
+            ",".join(self.wasteVehiclesTypes),
             quote(self.givenName),
             quote(self.contactEmail),
             quote(self.contactPhone),
@@ -183,6 +206,28 @@ class EtabRow(BaseRow):
         if not self.companyTypes:
             return False
         return all([c_type in COMPANY_TYPES for c_type in self.companyTypes])
+
+    def collector_types_are_valid(self):
+        if not self.collectorTypes:
+            return True
+        if "COLLECTOR" not in self.companyTypes:
+            return False
+        return all([c_type in COLLECTOR_TYPES for c_type in self.collectorTypes])
+
+    def waste_processor_types_are_valid(self):
+        if not self.wasteProcessorTypes:
+            return True
+        if "WASTEPROCESSOR" not in self.companyTypes:
+            return False
+
+        return all([c_type in WASTE_PROCESSOR_TYPES for c_type in self.wasteProcessorTypes])
+
+    def waste_vehicle_types_are_valid(self):
+        if not self.wasteVehiclesTypes:
+            return True
+        if "WASTE_VEHICLES" not in self.companyTypes:
+            return False
+        return all([c_type in WASTE_VEHICLE_TYPES for c_type in self.wasteVehiclesTypes])
 
     def phone_number_is_valid(self):
         if not self.contactPhone:
@@ -216,6 +261,33 @@ class EtabRow(BaseRow):
                     row_number=self.index,
                     field_name="companyTypes",
                     field_value=self.companyTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.collector_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="collectorTypes",
+                    field_value=self.collectorTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.waste_processor_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="wasteProcessorTypes",
+                    field_value=self.wasteProcessorTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.waste_vehicle_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="wasteVehiclesTypes",
+                    field_value=self.wasteVehiclesTypes,
                     tab=self.tab_name,
                 )
             )
@@ -254,7 +326,7 @@ class EtabRow(BaseRow):
 
 
 @attr.s()
-class EtabRows(BaseRows):
+class EtabCreateRows(BaseRows):
     header = attr.ib(default="")
     rows = attr.ib(default=attr.Factory(list))
     is_valid = attr.ib(default=False)
@@ -293,7 +365,7 @@ class EtabRows(BaseRows):
 
     def as_csv(self):
         ret = []
-        ret.append(format_csv_row([quote(fn) for fn in ETABLISSEMENTS_FIELDS]))
+        ret.append(format_csv_row([quote(fn) for fn in ETABLISSEMENTS_CREATE_FIELDS]))
         for row in self:
             ret.append(row.as_csv())
         return ret
@@ -302,14 +374,16 @@ class EtabRows(BaseRows):
     def from_worksheet(cls, worksheet):
         etab_rows = []
         idx = 1
-        for row in worksheet.iter_rows(min_row=MIN_ETAB_ROW, max_col=MAX_ETAB_COL):
-            data = dict_read(row, ETABLISSEMENTS_FIELDS)
+        for row in worksheet.iter_rows(min_row=MIN_ETAB_ROW, max_col=MAX_ETAB_CREATE_COL):
+            data = dict_read(row, ETABLISSEMENTS_CREATE_FIELDS)
+
             if idx != 1:
-                etab_row = EtabRow.from_dict(idx, data)
+                etab_row = EtabCreateRow.from_dict(idx, data)
 
                 if etab_row:
                     etab_rows.append(etab_row)
             idx += 1
+
         return cls(rows=etab_rows)
 
 
@@ -421,9 +495,7 @@ class RoleRows(BaseRows):
     verbose_errors = attr.ib(default=attr.Factory(list))
 
     def admin_sirets(self):
-        return list(
-            set([row.siret for row in self if row.siret and row.role == "ADMIN"])
-        )
+        return list(set([row.siret for row in self if row.siret and row.role == "ADMIN"]))
 
     def as_csv(self):
         ret = []
@@ -467,3 +539,219 @@ class RoleRows(BaseRows):
                     role_rows.append(role_row)
             idx += 1
         return cls(rows=role_rows)
+
+
+@attr.s()
+class EtabUpdateRow(BaseRow):
+    index = attr.ib()
+    siret = attr.ib(default="")
+
+    companyTypes = attr.ib(default=attr.Factory(list))
+    collectorTypes = attr.ib(default=attr.Factory(list))
+    wasteProcessorTypes = attr.ib(default=attr.Factory(list))
+    wasteVehiclesTypes = attr.ib(default=attr.Factory(list))
+
+    errors = attr.ib(default=attr.Factory(list))
+    validated = attr.ib(default=False)
+    tab_name = ETABLISSEMENTS_TAB
+
+    def as_str(self):
+        return f"{self.siret}"
+
+    def as_list(self):
+        return [
+            str(self.index),
+            self.siret,
+            ",".join(self.companyTypes),
+            ",".join(self.collectorTypes),
+            ",".join(self.wasteProcessorTypes),
+            ",".join(self.wasteVehiclesTypes),
+            ERROR_STR if not self.is_valid else VALID_STR,
+        ]
+
+    def as_csv(self):
+        quoted = [
+            quote(self.siret),
+            ",".join(self.companyTypes),
+            ",".join(self.collectorTypes),
+            ",".join(self.wasteProcessorTypes),
+            ",".join(self.wasteVehiclesTypes),
+        ]
+        return format_csv_row(quoted)
+
+    def as_json(self):
+        the_dict = attr.asdict(self)
+
+        def process_field(k):
+            if k == "siret":
+                return "orgId"
+            return k
+
+        def process_value(value):
+            if value is None:
+                return []
+            return value
+
+        res = {
+            process_field(field_name): process_value(value)
+            for field_name, value in the_dict.items()
+            if field_name in ETABLISSEMENTS_UPDATE_FIELDS
+        }
+        return res
+
+    def company_types_are_valid(self):
+        if not self.companyTypes:
+            return False
+        return all([c_type in COMPANY_TYPES for c_type in self.companyTypes])
+
+    def collector_types_are_valid(self):
+        if not self.collectorTypes:
+            return True
+        if "COLLECTOR" not in self.companyTypes:
+            return False
+        matches = [c_type in COLLECTOR_TYPES for c_type in self.collectorTypes]
+        return all(matches) and len(matches)
+
+    def waste_processor_types_are_valid(self):
+        if not self.wasteProcessorTypes:
+            return True
+        if "WASTEPROCESSOR" not in self.companyTypes:
+            return False
+        matches = [c_type in WASTE_PROCESSOR_TYPES for c_type in self.wasteProcessorTypes]
+        return all(matches) and len(matches)
+
+    def waste_vehicle_types_are_valid(self):
+        if not self.wasteVehiclesTypes:
+            return True
+        if "WASTE_VEHICLES" not in self.companyTypes:
+            return False
+        matches = [c_type in WASTE_VEHICLE_TYPES for c_type in self.wasteVehiclesTypes]
+        return all(matches) and len(matches)
+
+    def validate(self):
+        if not self.siret_is_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="siret",
+                    field_value=self.siret,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.company_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="companyTypes",
+                    field_value=self.companyTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.collector_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="collectorTypes",
+                    field_value=self.collectorTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.waste_processor_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="wasteProcessorTypes",
+                    field_value=self.wasteProcessorTypes,
+                    tab=self.tab_name,
+                )
+            )
+        if not self.waste_vehicle_types_are_valid():
+            self.errors.append(
+                RowError(
+                    row_number=self.index,
+                    field_name="wasteVehiclesTypes",
+                    field_value=self.wasteVehiclesTypes,
+                    tab=self.tab_name,
+                )
+            )
+        # if not self.phone_number_is_valid():
+        #     self.errors.append(
+        #         RowError(
+        #             row_number=self.index,
+        #             field_name="contactPhone",
+        #             field_value=self.contactPhone,
+        #             tab=self.tab_name,
+        #         )
+        #     )
+        # if not self.email_is_valid():
+        #     self.errors.append(
+        #         RowError(
+        #             row_number=self.index,
+        #             field_name="contactEmail",
+        #             field_value=self.contactEmail,
+        #             tab=self.tab_name,
+        #         )
+        #     )
+        self.validated = True
+
+
+@attr.s()
+class EtabUpdateRows(BaseRows):
+    header = attr.ib(default="")
+    rows = attr.ib(default=attr.Factory(list))
+    is_valid = attr.ib(default=False)
+    has_enough_rows = attr.ib(default=True)
+    has_too_many_rows = attr.ib(default=False)
+    siret_errors = attr.ib(default=attr.Factory(list))
+    verbose_errors = attr.ib(default=attr.Factory(list))
+
+    def append(self, row):
+        if not self.header:
+            self.header = row
+        else:
+            self.rows.append(row)
+
+    def sirets(self):
+        return list(set([item.siret for item in self if item.siret]))
+
+    def validate(self):
+        self.is_valid = True
+        if len(self.rows) < 3:
+            self.has_enough_rows = False
+            return
+        if len(self.rows) > 500:
+            self.has_too_many_rows = True
+            return
+        for row in self:
+            row.validate()
+            if not row.is_valid:
+                self.is_valid = False
+
+    def as_csv(self):
+        ret = []
+        ret.append(format_csv_row([quote(fn) for fn in ETABLISSEMENTS_UPDATE_FIELDS]))
+        for row in self:
+            ret.append(row.as_csv())
+        return ret
+
+    def as_json(self):
+        ret = []
+        for row in self:
+            ret.append(row.as_json())
+        return ret
+
+    @classmethod
+    def from_worksheet(cls, worksheet):
+        etab_rows = []
+        idx = 1
+        for row in worksheet.iter_rows(min_row=MIN_ETAB_ROW, max_col=MAX_ETAB_UPDATE_COL):
+            data = dict_read(row, ETABLISSEMENTS_UPDATE_FIELDS)
+
+            if idx != 1:
+                etab_row = EtabUpdateRow.from_dict(idx, data)
+
+                if etab_row:
+                    etab_rows.append(etab_row)
+            idx += 1
+
+        return cls(rows=etab_rows)

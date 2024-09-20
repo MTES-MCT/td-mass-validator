@@ -37,6 +37,21 @@ $ pipenv install -d
 
 Se référer au fichier src/core/settings/env.dist
 
+
+
+### Lancement de l'application
+
+```
+    $ manage.py runserver
+```
+
+Pour les tâches asynchrones, dans une autre fenêtre de terminal:
+
+```
+    $ DJANGO_SETTINGS_MODULE='core.settings.dev' celery -A core worker -l info
+```
+ 
+ 
 ## Licence
 
 Le code source du logiciel est publié sous licence [MIT](https://fr.wikipedia.org/wiki/Licence_MIT).

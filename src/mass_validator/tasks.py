@@ -13,12 +13,11 @@ def check_sirets(data):
     """
     errors = []
     count = len(data)
+
     for idx, el in enumerate(data):
         siret_exists = check_siret(el["siret"])
 
-        current_task.update_state(
-            state="PROGRESS", meta={"progress": round(100 * ((idx + 1) / count))}
-        )
+        current_task.update_state(state="PROGRESS", meta={"progress": round(100 * ((idx + 1) / count))})
 
         if not siret_exists:
             errors.append(el)
