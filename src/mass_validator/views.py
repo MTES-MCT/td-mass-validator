@@ -127,7 +127,6 @@ class ValidateCreationFileView(FormView):
             validate_header(role_first_row, ROLES_FIELDS)
         except InvalidHeaderException:
             self.parse_error = True
-            breakpoint()
             return
 
         etab_rows = EtabCreateRows.from_worksheet(ws_etablissements)
