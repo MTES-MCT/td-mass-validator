@@ -10,10 +10,10 @@ from ..fields import hash_answer
 
 pytestmark = pytest.mark.django_db
 
-IMPORT_ETAB_OK = settings.BASE_DIR / "tst_files" / "create_etabs_ok.xlsx"
-IMPORT_ETAB_NOT_OK = settings.BASE_DIR / "tst_files" / "create_etabs_not_ok.xlsx"
-MODIF_ETAB_OK = settings.BASE_DIR / "tst_files" / "modif_etabs_ok.xlsx"
-MODIF_ETAB_NOT_OK = settings.BASE_DIR / "tst_files" / "modif_etabs_not_ok.xlsx"
+IMPORT_ETAB_OK = settings.SRC_DIR / "tst_files" / "create_etabs_ok.xlsx"
+IMPORT_ETAB_NOT_OK = settings.SRC_DIR / "tst_files" / "create_etabs_not_ok.xlsx"
+MODIF_ETAB_OK = settings.SRC_DIR / "tst_files" / "modif_etabs_ok.xlsx"
+MODIF_ETAB_NOT_OK = settings.SRC_DIR / "tst_files" / "modif_etabs_not_ok.xlsx"
 
 
 def test_upload_view_get(anon_client):

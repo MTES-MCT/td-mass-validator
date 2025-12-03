@@ -3,7 +3,8 @@ from pathlib import Path
 
 import environ
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[3]
+SRC_DIR = BASE_DIR / "src"
 
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(BASE_DIR / ".env")
@@ -49,7 +50,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [SRC_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -70,7 +71,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": SRC_DIR / "db.sqlite3",
     }
 }
 
@@ -106,11 +107,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = SRC_DIR / "staticfiles"
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIR = BASE_DIR / "static"
+STATICFILES_DIR = SRC_DIR / "static"
 
 STATICFILES_DIRS = [STATICFILES_DIR]
 STATICFILES_FINDERS = (
@@ -129,7 +130,7 @@ TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT = env("TD_COMPANY_ELASTICSEARCH_CACERTS
 USERNAME = env("USER_NAME")
 PASSWORD = env("PASSWORD")
 
-CERT_PATH = str(BASE_DIR / "certs.pem")
+CERT_PATH = str(SRC_DIR / "certs.pem")
 if not os.path.exists(CERT_PATH):
     c = TD_COMPANY_ELASTICSEARCH_CACERTS_CONTENT.split("\\n")
     with open(CERT_PATH, "w") as f:
