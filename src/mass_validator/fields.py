@@ -118,9 +118,9 @@ class MathCaptchaWidget(forms.MultiWidget):
     def verify_numbers(self, start_int, end_int):
         start_int, end_int = int(start_int), int(end_int)
         if start_int < 0 or end_int < 0:
-            raise Warning("MathCaptchaWidget requires positive integers " "for start_int and end_int.")
+            raise Warning("MathCaptchaWidget requires positive integers for start_int and end_int.")
         elif end_int < start_int:
-            raise Warning("MathCaptchaWidget requires end_int be greater " "than start_int.")
+            raise Warning("MathCaptchaWidget requires end_int be greater than start_int.")
         return start_int, end_int
 
 
