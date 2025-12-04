@@ -17,7 +17,7 @@ def test_check_sirets_fails(mock_get):
 
 
 @patch("mass_validator.tasks.check_siret")
-def test_check_sirets_succeeds(mock_get):
+def test_check_sirets_suceed(mock_get):
     mock_get.return_value = True
 
     res = check_sirets([{"siret": "1234"}])

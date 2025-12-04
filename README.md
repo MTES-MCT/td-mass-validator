@@ -16,20 +16,21 @@ Ce projet permet de valider les fichiers d'import avant envoi, afin d'économise
 # Pré-requis
 
 - Python > 3.11
-- Une instance de Redis    
-- Le package manager UV https://docs.astral.sh/uv/
-- [uv](https://docs.astral.sh/uv/) (package manager)
-
-- Aucune DB n'est utilisée
+- Redis
+- pipenv
 
 # Installation
 
- 
+Initialisation et activation d'un environnement
+
+```
+$ pipenv shell
+```
 
 Installation des dépendances
 
 ```
-$ uv sync --frozen --group test --group dev
+$ pipenv install -d
 ```
 
 # Environnement
@@ -41,13 +42,13 @@ Se référer au fichier src/core/settings/env.dist
 ### Lancement de l'application
 
 ```
-    $ uv run python manage.py runserver
+    $ manage.py runserver
 ```
 
 Pour les tâches asynchrones, dans une autre fenêtre de terminal:
 
 ```
-    $ DJANGO_SETTINGS_MODULE='core.settings.dev' uv run celery -A core worker -l info
+    $ DJANGO_SETTINGS_MODULE='core.settings.dev' celery -A core worker -l info
 ```
  
  
